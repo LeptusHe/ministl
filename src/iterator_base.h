@@ -107,7 +107,7 @@ value_type(const Iterator&)
     return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
 }
 
-// functions distance used to calculate the distance of two iterator
+// functions distance used to calculate the distance of two iterators
 template <typename InputIteator>
 inline typename iterator_traits<InputIteator>::difference_type
 distance(InputIteator first, InputIteator last)
