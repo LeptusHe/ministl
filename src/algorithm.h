@@ -9,6 +9,18 @@
 
 namespace ministl {
 
+template <typename T>
+inline const T& max(const T &a, const T &b)
+{
+    return a < b ? b : a;
+}
+
+template <typename T, typename Compare>
+inline const T& max(const T &a, const T &b, Compare comp)
+{
+    return comp(a, b) ? b : a;
+}
+
 // algorithm equal
 template <typename InputIterator1, typename InputIterator2>
 bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)

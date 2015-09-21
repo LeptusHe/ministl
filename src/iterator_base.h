@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-namespace ministl {
+namespace ministl {         
 
 struct input_iterator_tag  { };
 struct output_iterator_tag { };
@@ -107,7 +107,7 @@ value_type(const Iterator&)
     return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
 }
 
-// functions distance used to calculate the distance of two iterators
+// functions distance used to calculate the distance of two iterator
 template <typename InputIteator>
 inline typename iterator_traits<InputIteator>::difference_type
 distance(InputIteator first, InputIteator last)

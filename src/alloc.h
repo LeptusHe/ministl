@@ -97,7 +97,6 @@ public:
 };
 
 
-
 enum { __ALIGN = 8 };
 enum { __MAX_BYTES = 128 };
 enum { __NFREELISTS = __MAX_BYTES / __ALIGN };
