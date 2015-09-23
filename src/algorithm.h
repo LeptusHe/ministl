@@ -21,6 +21,15 @@ inline const T& max(const T &a, const T &b, Compare comp)
     return comp(a, b) ? b : a;
 }
 
+// algorithm find
+template <typename InputIterator, typename T>
+InputIterator find(InputIterator first, InputIterator last, const T &x)
+{
+    while (first != last && *first != x)
+        ++first;
+    return first;
+}
+
 // algorithm equal
 template <typename InputIterator1, typename InputIterator2>
 bool equal(InputIterator1 first1, InputIterator1 last1, InputIterator2 first2)

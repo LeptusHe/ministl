@@ -18,19 +18,19 @@ struct list_node {
     T data;
 };
 
-// the definition of list iterator
+// the definition of list iterator                       c
 template <typename T, typename Ref, typename Ptr>
 struct list_iterator {
     typedef list_iterator<T, T&, T*> iterator;
     typedef list_iterator<T, Ref, Ptr> self;
 
-    typedef MiniSTL::bidirectional_iterator_tag iterator_category;
+    typedef bidirectional_iterator_tag iterator_category;
     typedef T                 value_type;
     typedef Ptr               pointer;
     typedef Ref               reference;
     typedef list_node<T>*     link_type;
     typedef size_t            size_type;
-    typedef ptrdiff_t         difference;
+    typedef ptrdiff_t         difference_type;
 
     link_type node;
 
@@ -41,7 +41,7 @@ struct list_iterator {
     
     bool operator==(const self& x) const { return node == x.node; }
     bool operator!=(const self& x) const { return node != x.node; }
-    reference operator*() const { return (*node).data; }
+    reference operator*() const { return (*node).data;   }
     pointer operator->() const  { return &(operator*()); }
 
     self& operator++()
@@ -74,27 +74,27 @@ template <typename T, typename Alloc = alloc>
 class list {
 protected:
     typedef list_node<T> list_node;
-    typedef MiniSTL::simple_alloc<list_node, Alloc> list_node_allocator;
+    typedef simple_alloc<list_node, Alloc> list_node_allocator;
 public:
-    typedef T                                      value_type;
-    typedef value_type*                            pointer;
-    typedef const valut_type*                      const_pointer;
-    typedef value_type&                            reference;
-    typedef const value_type&                      const_reference;
-    typedef size_t                                 size_type;
-    typedef ptrdiff_t                              difference;
-    typedef list_node* link_type;
-    typedef list_iterator<T, T&, T*>             iterator;
+    typedef T                         value_type;
+    typedef value_type*               pointer;
+    typedef const value_type*         const_pointer;
+    typedef value_type&               reference;
+    typedef const value_type&         const_reference;
+    typedef size_t                    size_type;
+    typedef ptrdiff_t                 difference;
+    typedef list_node*                link_type;
+    typedef list_iterator<T, T&, T*>  iterator;
     typedef list_iterator<T, const T&, const T*> const_iterator;
 protected:
     link_type node;
 protected:
-    link_type get_node( ) { return list_node_allocator::allocate( ); }
-    void put_node(link_type p) { list_node_allocator::deallocate(p); }
+    link_type get_node( )      { return list_node_allocator::allocate( ); }
+    void put_node(link_type p) { list_node_allocator::deallocate(p);      }
     link_type create_node(const T& x) 
     {
         link_type p = get_node( );
-        MiniSTL::construct(p, x);
+        construct(&p->data, x);
         return p;
     }
 
@@ -109,10 +109,10 @@ protected:
     {
         if (position != last) {
             (*(link_type((*last.node).prev))).next = position.node;
-            (*(link_type((*first.node).next))).next = last.node;
+            (*(link_type((*first.node).prev))).next = last.node;
             (*(link_type((*position.node).prev))).next = first.node;
             link_type tmp = link_type((*position.node).prev);
-            (*position.node)->prev = (*last.node).prev;
+            (*position.node).prev = (*last.node).prev;
             (*last.node).prev = (*first.node).prev;
             (*first.node).prev = tmp;
         }
@@ -120,19 +120,21 @@ protected:
 
 public:
     list( ) { empty_initialize( ); }
-    iterator begin( ) { return (link_type)((*node).next); }
-    iterator end( )   { return node; }
-    reference front() { return *begin; }
-    reference back() { return *(--end()); }
+    iterator  begin( ) { return (link_type)((*node).next); }
+    iterator  end( )   { return node;       }
+    iterator  begin() const { return (link_type)((*node).next); }
+    iterator  end()   const { return node; }
+    reference front()  { return *begin();   }
+    reference back()   { return *(--end()); }
     bool empty() const { return node->next = node; }
     size_type size( ) const 
     {
         size_type result = 0;
-        MiniSTL::distance(begin( ), end( ), result);
+        result = distance(begin(), end());
         return result;
     }
     void push_front(const T& x) { insert(begin( ), x); }
-    void push_back(const T& x) { insert(end( ), x); }
+    void push_back(const T& x)  { insert(end( ), x); }
     iterator insert(iterator position, const T &x) 
     {
         link_type tmp = create_node(x);
@@ -158,14 +160,14 @@ public:
 
         prev_node->next = next_node;
         next_node->prev = prev_node;
-        MiniSTL::destory(position.node);
+        destory(position.node);
         return iterator(next_node);
     }
 
     void clear( );
     void remove(const T &x);
     void unique( );
-
+    void splice(iterator position, list &, iterator first, iterator last);
  };
 
 template <typename T, typename Alloc>
@@ -214,6 +216,14 @@ void list<T, Alloc>::unique( )
         next = first;
     }
 }
+
+template <typename T, typename Alloc>
+void list<T, Alloc>::splice(iterator position, list &, iterator first, iterator last)
+{
+    if (first != last)
+        transfer(position, first, last);
+}
+
 
 } // namespace ministl
 
