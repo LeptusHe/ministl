@@ -1,5 +1,6 @@
 #ifndef MINISTL_FUNCTION_H
 #define MINISTL_FUNCTION_H
+#include <functional>
 
 //namespace ministl {
 
@@ -334,7 +335,6 @@ inline binary_compose<Operation1, Operation2, Operation3> compose2(const Operati
 }
 
 
-// pointer_to_unary_function factor adapter
 
 
 //} // namespace ministl
