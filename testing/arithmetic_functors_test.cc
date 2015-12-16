@@ -1,8 +1,8 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
-#include <gtest/gtest.h>
 
+#include "gtest/gtest.h"
 #include "function.h"
 
 namespace ministl {
