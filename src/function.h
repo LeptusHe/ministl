@@ -1,8 +1,7 @@
 #ifndef MINISTL_FUNCTION_H
 #define MINISTL_FUNCTION_H
-#include <functional>
 
-//namespace ministl {
+namespace ministl {
 
 template <typename Arg, typename Result>
 class unary_function {
@@ -219,7 +218,7 @@ class binary_negate : public binary_function<typename Predicate::first_argument_
 protected:
   Predicate pred_;
 public:
-  explicit unary_negate(const Predicate& pred) : pred_(pred) { }
+  explicit binary_negate(const Predicate& pred) : pred_(pred) { }
 
   bool operator()(const typename Predicate::first_argument_type& x,
                   const typename Predicate::second_argument_type& y) const { return !pred_(x, y); }
@@ -240,10 +239,10 @@ protected:
   Operation op_;
   typename Operation::first_argument_type value_;
 public:
-  explicit binder1st(const Operation& x, const typename Operator::first_argument_type& y)
+  explicit binder1st(const Operation& x, const typename Operation::first_argument_type& y)
     : op_(x), value_(y) { }
 
-  typename Operation::result_type operator()(const typename Operator::second_argument_type& y) const
+  typename Operation::result_type operator()(const typename Operation::second_argument_type& y) const
   {
     return op_(value_, y);
   }
@@ -273,11 +272,10 @@ public:
   {
     return op_(x, value_);
   }
-}
+};
 
-template <typename Operation, class Tp>
-inline binder2nd<Operation>
-bind2st(const Operation& fn, const Tp& x)
+template <typename Operation, typename Tp>
+inline binder2st<Operation> bind2st(const Operation& fn, const Tp& x)
 {
   typedef Operation::second_argument_type Arg2_type;
   return bind2st<Operation>(fn, Arg2_type(x));
@@ -292,10 +290,10 @@ protected:
   Operation1 fn1_;
   Operation2 fn2_;
 public:
-  explicit unary_compose(const Operation1& fn1, const Operation2& fn2) const
+  explicit unary_compose(const Operation1& fn1, const Operation2& fn2)
     : fn1_(fn1), fn2_(fn2) { }
 
-  typename Operation1::result_type operator(typename Operation2::argument_type x) const
+  typename Operation1::result_type operator()(typename Operation2::argument_type x) const
   {
     return fn1_(fn2_(x));
   }
@@ -329,14 +327,11 @@ public:
 
 template <typename Operation1, typename Operation2, typename Operation3>
 inline binary_compose<Operation1, Operation2, Operation3> compose2(const Operation1& fn1, const Operation2& fn2,
-                                                                   const Operation3& fn3, )
+                                                                   const Operation3& fn3)
 {
   return binary_compose<Operation1, Operation2, Operation3>(fn1, fn2, fn3);
 }
 
-
-
-
-//} // namespace ministl
+} // namespace ministl
 
 #endif // MINISTL_FUNCTION_H
