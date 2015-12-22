@@ -1,3 +1,18 @@
+########################
+# Visio Studio
+########################
+*.suo
+*.ilk
+*.pdb
+*.idb
+*.sdf
+*.sln
+*.log
+*.tlog
+*.user
+*.filters
+*.vcxproj
+
 # Compiled Object files
 *.slo
 *.lo
