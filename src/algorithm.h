@@ -21,7 +21,11 @@ inline const T& max(const T &a, const T &b, Compare comp)
     return comp(a, b) ? b : a;
 }
 
-// algorithm find
+// --------------------------------------------------------------------------
+// find algorithms
+//---------------------------------------------------------------------------
+// names of algorithms: find, find_if, count, count_if
+//---------------------------------------------------------------------------
 template <typename InputIterator, typename T>
 InputIterator find(InputIterator first, InputIterator last, const T &x)
 {
@@ -29,6 +33,84 @@ InputIterator find(InputIterator first, InputIterator last, const T &x)
         ++first;
     return first;
 }
+
+template <typename InputIterator, typename Predicate>
+InputIterator find_if(InputIterator first, InputIterator last, Predicate pred)
+{ 
+  while (first != last && !pred(*first))
+    ++first;
+  return first;
+}
+
+template <typename InputIterator, typename Predicate>
+InputIterator find_if_not(InputIterator first, InputIterator last, Predicate pred)
+{
+  while (first != last && pred(*first))
+    ++first;
+  return first;
+}
+
+template <typename InputIterator, typename T>
+typename iterator_traits<T>::difference_type
+count(InputIterator first, InputIterator last, const T& value)
+{
+  typename iterator_traits<T>::difference_type n = 0;
+
+  for (; first != last; ++first) {
+    if (*first == value)
+      ++n;
+  }
+  return n;
+}
+
+template <typename InputIterator, typename Predicate>
+typename iterator_traits<T>::difference_type
+count_if(InputIterator first, InputIterator last, Predicate pred)
+{
+  typename iterator_traits<T>::difference_type n = 0;
+
+  for (; first != last; ++first) {
+    if (pred(*first))
+      ++n;
+  }
+  return n;
+}
+
+//---------------------------------------------------------------------
+// algorithms used to find elements which are adjacent
+//---------------------------------------------------------------------
+// names of algorithms: adjacent_find, search_n
+//----------------------------------------------------------------------
+template <typename ForwardIterator>
+ForwardIterator adjacent_if(ForwardIterator first, ForwardIterator last)
+{
+  if (first == last)
+    return last;
+
+  ForwardIterator next = first;
+  while (++next != last) {
+    if (*first == *next)
+      return first;
+    first = next;
+  }
+  return last;
+}
+
+template <typename ForwardIterator, typename BinaryPredicate>
+ForwardIterator adjacent_if(ForwardIterator first, ForwardIterator last, BinaryPredicate binary_pred)
+{
+  if (first == last)
+    return last;
+
+  ForwardIterator next = first;
+  while (++next != last) {
+    if (binary_pred(*first, *next))
+      return first;
+    first = next;
+  }
+  return last;
+}
+
 
 // algorithm equal
 template <typename InputIterator1, typename InputIterator2>
