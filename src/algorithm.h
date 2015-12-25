@@ -82,7 +82,7 @@ count_if(InputIterator first, InputIterator last, Predicate pred)
 // names of algorithms: adjacent_find, search_n
 //----------------------------------------------------------------------
 template <typename ForwardIterator>
-ForwardIterator adjacent_if(ForwardIterator first, ForwardIterator last)
+ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last)
 {
   if (first == last)
     return last;
@@ -110,6 +110,39 @@ ForwardIterator adjacent_if(ForwardIterator first, ForwardIterator last, BinaryP
   }
   return last;
 }
+
+
+template <typename ForwardIterator, typename Integer, class T>
+ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Integer count, const T& value)
+{
+  if (count <= 0)
+    return first;
+  else {
+    first = find(first, last, value);
+    while (first != last) {
+      Integer n = count - 1;
+      ForwardIterator i = first;
+      ++i;
+      while (i != last && *i = value && n != 0) {
+        ++i;
+        --n;
+      }
+      if (n == 0)
+        return first;
+      else
+        first = find(i, last, value);
+    }
+    return last;
+  }
+}
+
+
+template <typename ForwardIterator, typename Integer, typename T, typename BinaryPredicate>
+ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Integer count, BinaryPredicate)
+{
+
+}
+
 
 
 // algorithm equal
