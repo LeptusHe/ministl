@@ -21,11 +21,11 @@ inline const T& max(const T &a, const T &b, Compare comp)
     return comp(a, b) ? b : a;
 }
 
-// --------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 // find algorithms
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // names of algorithms: find, find_if, count, count_if
-//---------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename InputIterator, typename T>
 InputIterator find(InputIterator first, InputIterator last, const T &x)
 {
@@ -43,7 +43,8 @@ InputIterator find_if(InputIterator first, InputIterator last, Predicate pred)
 }
 
 template <typename InputIterator, typename Predicate>
-InputIterator find_if_not(InputIterator first, InputIterator last, Predicate pred)
+InputIterator find_if_not(InputIterator first, InputIterator last,
+                          Predicate pred)
 {
   while (first != last && pred(*first))
     ++first;
@@ -76,11 +77,11 @@ count_if(InputIterator first, InputIterator last, Predicate pred)
   return n;
 }
 
-//---------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // algorithms used to find elements which are adjacent
-//---------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // names of algorithms: adjacent_find, search_n
-//----------------------------------------------------------------------
+//------------------------------------------------------------------------------
 template <typename ForwardIterator>
 ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last)
 {
@@ -97,7 +98,8 @@ ForwardIterator adjacent_find(ForwardIterator first, ForwardIterator last)
 }
 
 template <typename ForwardIterator, typename BinaryPredicate>
-ForwardIterator adjacent_if(ForwardIterator first, ForwardIterator last, BinaryPredicate binary_pred)
+ForwardIterator adjacent_if(ForwardIterator first, ForwardIterator last,
+                            BinaryPredicate binary_pred)
 {
   if (first == last)
     return last;
@@ -113,7 +115,8 @@ ForwardIterator adjacent_if(ForwardIterator first, ForwardIterator last, BinaryP
 
 
 template <typename ForwardIterator, typename Integer, class T>
-ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Integer count, const T& value)
+ForwardIterator search_n(ForwardIterator first, ForwardIterator last,
+                         Integer count, const T& value)
 {
   if (count <= 0)
     return first;
@@ -137,12 +140,45 @@ ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Integer co
 }
 
 
-template <typename ForwardIterator, typename Integer, typename T, typename BinaryPredicate>
-ForwardIterator search_n(ForwardIterator first, ForwardIterator last, Integer count, BinaryPredicate)
+template <typename ForwardIterator, typename Integer,
+  typename T,typename BinaryPredicate>
+ForwardIterator search_n(ForwardIterator first,
+                         ForwardIterator last,
+                         Integer count, const T& value,
+                         BinaryPredicate binary_pred)
 {
+  if (count <= 0)
+    return first;
+  else {
+    while (first != last) {
+      if (binary_pred(*first, value))
+        break;
+      ++first;
+    }
 
+    while (first != last) {
+      Integer n = count - 1;
+      ForwardIterator i = first;
+      ++i;
+
+      while (i != last && n != 0 && binary_pred(*i, value)) {
+        ++i;
+        --n;
+      }
+      if (n == 0)
+        return first;
+      else {
+        while (i != last) {
+          if (binary_pred(*i, value))
+            break;
+          ++i;
+        }
+        first = i;
+      }
+    }
+    return last;
+  }
 }
-
 
 
 // algorithm equal
@@ -202,8 +238,11 @@ inline bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
 }
 
 template <typename InputIterator1, typename InputIterator2, typename Compare>
-inline bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
-                                    InputIterator2 first2, InputIterator2 last2, Compare comp)
+inline bool lexicographical_compare(InputIterator1 first1,
+                                    InputIterator1 last1,
+                                    InputIterator2 first2,
+                                    InputIterator2 last2,
+                                    Compare comp)
 {
     for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
         if (comp(*first1, *first2))
@@ -215,8 +254,10 @@ inline bool lexicographical_compare(InputIterator1 first1, InputIterator1 last1,
 }
 
 template <typename T>
-inline bool lexicographical_compare(const unsigned char *first1, const unsigned char *last1,
-                                    const unsigned char *first2, const unsigned char *last2)
+inline bool lexicographical_compare(const unsigned char *first1,
+                                    const unsigned char *last1,
+                                    const unsigned char *first2,
+                                    const unsigned char *last2)
 {
     const size_t len_1 = last1 - first1;
     const size_t len_2 = last2 - first2;
@@ -239,7 +280,8 @@ inline bool lexicographical_compare(const char *first1, const char *last1,
 
 // algorithm mismatch
 template <typename InputIterator1, typename InputIterator2>
-pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1,
+pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
+                                              InputIterator1 last1,
                                               InputIterator2 first2)
 {
     while (first1 != last1 && *first1 != *first2) {
@@ -250,8 +292,10 @@ pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterat
 }
 
 template <typename InputIterator1, typename InputIterator2, typename BinaryPredicate>
-pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1, InputIterator1 last1,
-                                              InputIterator2 first2, BinaryPredicate binary_pred)
+pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
+                                              InputIterator1 last1,
+                                              InputIterator2 first2,
+                                              BinaryPredicate binary_pred)
 {
     while (first1 != last1 && binary_pred(first1, first2)) {
         ++first1;
@@ -284,7 +328,9 @@ inline OutputIterator copy(InputIterator first, InputIterator last,
 // copy_dispatch
 template <typename InputIterator, typename OutputIterator>
 struct copy_dispatch {
-    OutputIterator operator() (InputIterator first, InputIterator last, OutputIterator result)
+    OutputIterator operator() (InputIterator first,
+                               InputIterator last,
+                               OutputIterator result)
     {
         return copy(first, last, result, iterator_category(first));
     }
@@ -387,7 +433,9 @@ inline void fill(char* first, char* last, const char& c)
 
 // algorithm: copy_backward
 template <typename BidirectionalIter1, typename BidirectionalIter2>
-inline BidirectionalIter2 copy_backward(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIter2 result)
+inline BidirectionalIter2 copy_backward(BidirectionalIter1 first,
+                                        BidirectionalIter1 last,
+                                        BidirectionalIter2 result)
 {
     typedef typename __type_traits<typename iterator_traits<BidirectionalIter2>::value_type>
         ::has_trivial_assignment_operator Trivial;
@@ -401,7 +449,9 @@ struct __copy_backward_dispatch {
     typedef typename iterator_traits<BidirectionalIter1>::iterator_category category;
     typedef typename iterator_traits<BidirectionalIter1>::difference_type   Distance;
 
-    static BidirectionalIter2 copy(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIter2 result)
+    static BidirectionalIter2 copy(BidirectionalIter1 first,
+                                   BidirectionalIter1 last,
+                                   BidirectionalIter2 result)
     {
         return __copy_backward(first, last, result, category( ), (Distance*)0);
     }
@@ -427,7 +477,9 @@ struct __copy_backward_dispatch<const Tp*, Tp*, __true_type> {
 
 // _copybackward
 template <typename BidirectionalIter1, typename BidirectionalIter2, typename Distance>
-inline BidirectionalIter2 _copybackward(BidirectionalIter1 first, BidirectionalIter1 last, BidirectionalIter2 result,
+inline BidirectionalIter2 _copybackward(BidirectionalIter1 first,
+                                        BidirectionalIter1 last,
+                                        BidirectionalIter2 result,
                                         bidirectional_iterator_tag, Distance*)
 {
     while (first != last)
@@ -436,8 +488,11 @@ inline BidirectionalIter2 _copybackward(BidirectionalIter1 first, BidirectionalI
 }
 
 template <typename RandomAccessIter, typename BidirectionalIter, typename Distance>
-inline BidirectionalIter __copy_backward(RandomAccessIter first, RandomAccessIter last, BidirectionalIter result,
-                                            random_access_iterator_tag, Distance*)
+inline BidirectionalIter __copy_backward(RandomAccessIter first,
+                                         RandomAccessIter last,
+                                         BidirectionalIter result,
+                                         random_access_iterator_tag,
+                                         Distance*)
 {
     for (Distance n = last - first; n > 0; --n)
         *--result = *--last;
