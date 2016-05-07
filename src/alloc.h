@@ -14,7 +14,7 @@ namespace ministl {
 template <int inst>
 class __malloc_alloc_template {
 private:
-    // function used to deal with the stutition that no memory exists
+    // function used to deal with the situation that no memory exists
     // oom: out of memory
     static void *oom_malloc(size_t);
     static void *oom_realloc(void *, size_t);
@@ -30,15 +30,16 @@ public:
     }
 
     static void deallocate(void *p, size_t /* n */) { free(p); }
-    static void *realloc(void *p, size_t /* old_sz */, size_t new_sz)
+    static void *reallocate(void *p, size_t /* old_sz */, size_t new_sz)
     {
         void *result = realloc(p, new_sz);
         if (0 == result)
-            result = oom_malloc(p, new_sz);
+            result = oom_realloc(p, new_sz);
         return result;
     }
+
     // define a function set_malloc_handler whose argument is a function pointer
-    // and the function return a funtion pointer
+    // and the function return a function pointer
     static void(*set_malloc_handler(void(*f)())) ()
     {
         void(*old)() = __malloc_alloc_oom_handler;
@@ -50,7 +51,7 @@ public:
 template <int inst> void(*__malloc_alloc_template<inst>::__malloc_alloc_oom_handler)() = 0;
 
 template <int inst>
-void * __malloc_alloc_template<inst>::oom_malloc(size_t n)
+void *__malloc_alloc_template<inst>::oom_malloc(size_t n)
 {
     void(*my_malloc_handler)();
     void *result;
