@@ -7,18 +7,18 @@
 #include <string>
 #include <cassert>
 
-#define __THROW_BAD_ALLOC throw std::bad_alloc()
+#define THROW_BAD_ALLOC throw std::bad_alloc()
 
 namespace ministl {
 
 template <int inst>
-class __malloc_alloc_template {
+class malloc_alloc_template {
 private:
     // function used to deal with the situation that no memory exists
     // oom: out of memory
     static void *oom_malloc(size_t);
     static void *oom_realloc(void *, size_t);
-    static void(*__malloc_alloc_oom_handler)();
+    static void(*malloc_alloc_oom_handler)();
 
 public:
     static void *allocate(size_t n)
@@ -42,24 +42,24 @@ public:
     // and the function return a function pointer
     static void(*set_malloc_handler(void(*f)())) ()
     {
-        void(*old)() = __malloc_alloc_oom_handler;
-        __malloc_alloc_oom_handler = f;
+        void(*old)() = malloc_alloc_oom_handler;
+        malloc_alloc_oom_handler = f;
         return (*old);
     }
 };
 
-template <int inst> void(*__malloc_alloc_template<inst>::__malloc_alloc_oom_handler)() = 0;
+template <int inst> void(*malloc_alloc_template<inst>::malloc_alloc_oom_handler)() = 0;
 
 template <int inst>
-void *__malloc_alloc_template<inst>::oom_malloc(size_t n)
+void *malloc_alloc_template<inst>::oom_malloc(size_t n)
 {
     void(*my_malloc_handler)();
     void *result;
 
     for (;;) {
-        my_malloc_handler = __malloc_alloc_oom_handler;
+        my_malloc_handler = malloc_alloc_oom_handler;
         if (0 == my_malloc_handler) {
-            __THROW_BAD_ALLOC;
+            THROW_BAD_ALLOC;
         }
         (*my_malloc_handler)();
         result = malloc(n);
@@ -69,15 +69,15 @@ void *__malloc_alloc_template<inst>::oom_malloc(size_t n)
 }
 
 template <int inst>
-void *__malloc_alloc_template<inst>::oom_realloc(void *p, size_t n)
+void *malloc_alloc_template<inst>::oom_realloc(void *p, size_t n)
 {
     void(*my_malloc_handler)();
     void *result;
 
     for (;;) {
-        my_malloc_handler = __malloc_alloc_oom_handler;
+        my_malloc_handler = malloc_alloc_oom_handler;
         if (0 == my_malloc_handler) {
-            __THROW_BAD_ALLOC;
+            THROW_BAD_ALLOC;
         }
         (*my_malloc_handler)();
         result = realloc(p, n);
@@ -86,7 +86,7 @@ void *__malloc_alloc_template<inst>::oom_realloc(void *p, size_t n)
     }
 }
 
-typedef __malloc_alloc_template<0> malloc_alloc;
+typedef malloc_alloc_template<0> malloc_alloc;
 
 template <typename T, typename Alloc>
 class simple_alloc {
@@ -98,22 +98,22 @@ public:
 };
 
 
-enum { __ALIGN = 8 };
-enum { __MAX_BYTES = 128 };
-enum { __NFREELISTS = __MAX_BYTES / __ALIGN };
+enum { ALIGN = 8 };
+enum { MAX_BYTES = 128 };
+enum { NFREELISTS = MAX_BYTES / ALIGN };
 
 template <bool threads, int inst>
-class __default_alloc_template {
+class default_alloc_template {
 private:
-    static size_t ROUND_UP(size_t bytes) { return ((bytes)+__ALIGN - 1) & ~(__ALIGN - 1); }
+    static size_t ROUND_UP(size_t bytes) { return ((bytes) + ALIGN - 1) & ~(ALIGN - 1); }
 private:
     union obj {
         union obj *free_list_link;
         char client_data[1];
     };
 private:
-    static obj *volatile free_list[__NFREELISTS];
-    static size_t FREELIST_INDEX(size_t bytes) { return (((bytes)+__ALIGN - 1) / __ALIGN - 1); }
+    static obj *volatile free_list[NFREELISTS];
+    static size_t FREELIST_INDEX(size_t bytes) { return (((bytes)+ALIGN - 1) / ALIGN - 1); }
     static void *refill(size_t n);
     static char *chunk_alloc(size_t size, int &nobjs);
 
@@ -128,7 +128,7 @@ public:
         obj *volatile *my_free_list;
         obj *result;
 
-        if (n > (size_t)__MAX_BYTES)
+        if (n > (size_t)MAX_BYTES)
             return (malloc_alloc::allocate(n));
         my_free_list = free_list + FREELIST_INDEX(n);
         result = *my_free_list;
@@ -145,7 +145,7 @@ public:
         obj *q = (obj *)p;
         obj *volatile *my_free_list;
 
-        if (n > (size_t)__MAX_BYTES) {
+        if (n > (size_t)MAX_BYTES) {
             malloc_alloc::deallocate(p, n);
             return;
         }
@@ -158,22 +158,22 @@ public:
 };
 
 template <bool threads, int inst>
-char *__default_alloc_template<threads, inst>::start_free = 0;
+char *default_alloc_template<threads, inst>::start_free = 0;
 
 template <bool threads, int inst>
-char *__default_alloc_template<threads, inst>::end_free = 0;
+char *default_alloc_template<threads, inst>::end_free = 0;
 
 template <bool threads, int inst>
-size_t __default_alloc_template<threads, inst>::heap_size = 0;
+size_t default_alloc_template<threads, inst>::heap_size = 0;
 
 template <bool threads, int inst>
-typename __default_alloc_template<threads, inst>::obj *volatile
-    __default_alloc_template<threads, inst>::free_list[__NFREELISTS] =
+typename default_alloc_template<threads, inst>::obj *volatile
+    default_alloc_template<threads, inst>::free_list[NFREELISTS] =
 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 
 template <bool threads, int inst>
-void *__default_alloc_template<threads, inst>::refill(size_t n)
+void *default_alloc_template<threads, inst>::refill(size_t n)
 {
     int nobjs = 20;
 
@@ -203,7 +203,7 @@ void *__default_alloc_template<threads, inst>::refill(size_t n)
 }
 
 template <bool threads, int inst>
-char *__default_alloc_template<threads, inst>::chunk_alloc(size_t size, int& nobjs)
+char *default_alloc_template<threads, inst>::chunk_alloc(size_t size, int& nobjs)
 {
     char *result;
     size_t total_bytes = size * nobjs;
@@ -232,7 +232,7 @@ char *__default_alloc_template<threads, inst>::chunk_alloc(size_t size, int& nob
             int i;
             obj *volatile *my_free_list, *p;
 
-            for (i = size; i <= __MAX_BYTES; i += __ALIGN) {
+            for (i = size; i <= MAX_BYTES; i += ALIGN) {
                 my_free_list = free_list + FREELIST_INDEX(i);
                 p = *my_free_list;
 
@@ -252,8 +252,23 @@ char *__default_alloc_template<threads, inst>::chunk_alloc(size_t size, int& nob
     }
 }
 
+template <bool threads, int inst>
+void* default_alloc_template<threads, inst>::reallocate(void* p, size_t old_sz, size_t new_sz)
+{
+  if (old_sz > (size_t)MAX_BYTES && new_sz > (size_t)MAX_BYTES) {
+    return realloc(p, new_sz);
+  }
+  if (ROUND_UP(old_sz) == ROUND_UP(new_sz)) return p;
+
+  void* result = allocate(new_sz);
+  size_t copy_sz = new_sz > old_sz ? old_sz : new_sz;
+  memcpy(result, p, copy_sz);
+  deallocate(p, old_sz);
+  return result;
+}
+
 // set the default allocator
-typedef __default_alloc_template<0, 0> alloc;
+typedef default_alloc_template<0, 0> alloc;
 
 } // namespace ministl
 
