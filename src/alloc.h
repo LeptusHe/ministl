@@ -1,12 +1,6 @@
 #ifndef MINISTL_ALLOC_H
 #define MINISTL_ALLOC_H
 
-#include <new>
-#include <cstddef>
-#include <cstdlib>
-#include <string>
-#include <cassert>
-
 #define THROW_BAD_ALLOC throw std::bad_alloc()
 
 namespace ministl {
