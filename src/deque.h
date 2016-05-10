@@ -31,7 +31,7 @@ struct DequeIterator {
   Tp* first;
   Tp* last;
   map_pointer node;
-  
+
   static  size_t SBufferSize( ) { return DequeBufSize(sizeof(Tp)); }
 
   DequeIterator( ) : cur(nullptr), first(nullptr), last(nullptr), node(nullptr) { }
@@ -219,6 +219,7 @@ public:
     --tmp;
     return *tmp;
   }
+
   const_reference back( ) const
   {
     iterator tmp = finish;
@@ -252,12 +253,80 @@ public:
       push_back_aux(value);
   }
 
+  void pop_front( )
+  {
+    if (start.cur != start.last - 1) {
+      destory(start.cur);
+      ++start.cur;
+    } else
+      pop_front_aux( );
+  }
+
+  void pop_back( )
+  {
+    if (finish.cur != finish.first) {
+      --finish.cur;
+      destory(finish.cur);
+    } else
+      pop_back_aux( );
+  }
+
+  iterator insert(iterator pos, const value_type& x)
+  {
+    if (pos.cur == start.cur) {
+      push_front(x);
+      return start;
+    } else if (pos.cur == finish.cur) {
+      push_back(x);
+      iterator tmp = finish;
+      --tmp;
+      return tmp;
+    } else {
+      return insert_aux(pos, x);
+    }
+  }
+
+  iterator erase(iterator pos)
+  {
+    iterator next = pos;
+    ++next;
+    difference_type diff_size = pos - start;
+    if (size_t(diff_size) < (size( ) >> 1)) {
+      ministl::copy_backward(start, pos, next);
+      pop_front( );
+    } else {
+      ministl::copy(next, finish, pos);
+      pop_back( );
+    }
+    return start + diff_size;
+  }
+
+  void clear( )
+  {
+    for (map_pointer cur_node = start.node + 1; cur_node < finish.node; ++cur_node) {
+      destory(*cur_node, *cur_node + SBufferSize( ));
+      data_allocator::deallocate(*cur_node, SBufferSize( ));
+    }
+
+    if (start.node != finish.node) {
+      destory(start.cur, start.last);
+      destory(finish.first, finish.cur);
+      data_allocator::deallocate(finish.first, SBufferSize( ));
+    } else {
+      destory(start.cur, finish.cur);
+    }
+    finish = start;
+  }
+
 protected:
   enum { InitialMapSize = 8 };
 
 protected:
   void push_front_aux(const value_type& value);
   void push_back_aux(const value_type& value);
+  void pop_front_aux( );
+  void pop_back_aux( );
+  iterator insert_aux(iterator pos, const value_type& value);
   pointer allocate_node( ) { return data_allocator::allocate(DequeBufSize(sizeof(T))); }
   void deallocate_node(pointer p) { data_allocator::deallocate(p, DequeBufSize(sizeof(T))); }
   map_pointer allocate_map(size_t n)
@@ -328,6 +397,53 @@ void deque<Tp, Alloc, BufSize>::push_back_aux(const value_type& value)
     deallocate_node(*(finish.node + 1));
     throw;
   }
+}
+
+template <typename Tp, typename Alloc, size_t BufSize>
+void deque<Tp, Alloc, BufSize>::pop_front_aux( )
+{
+  destory(start.cur);
+  deallocate_node(start.first);
+  start.set_node(start.node + 1);
+  start.cur = start.first;
+}
+
+template <typename Tp, typename Alloc, size_t BufSize>
+void deque<Tp, Alloc, BufSize>::pop_back_aux( )
+{
+  deallocate_node(finish.first);
+  finish.set_node(finish.node - 1);
+  finish.cur = finish.last - 1;
+  destory(finish.cur);
+}
+
+template <typename Tp, typename Alloc, size_t BufSize>
+typename deque<Tp, Alloc, BufSize>::iterator
+deque<Tp, Alloc, BufSize>::insert_aux(iterator pos, const value_type& value)
+{
+  difference_type index = pos - start;
+  value_type value_copy = value;
+  if (size_t(index) < (size( ) >> 1)) {
+    push_front(front( ));
+    iterator front1 = start;
+    ++front1;
+    iterator front2 = front1;
+    ++front2;
+    pos = start + index;
+    iterator pos1 = pos;
+    ++pos1;
+    ministl::copy(front2, pos1, front1);
+  } else {
+    push_back(back( ));
+    iterator back1 = finish;
+    --back1;
+    iterator back2 = back1;
+    --back2;
+    pos = start + index;
+    ministl::copy_backward(pos, back2, back1);
+  }
+  *pos = value_copy;
+  return pos;
 }
 
 template <typename Tp, typename Alloc, size_t BufSize>
