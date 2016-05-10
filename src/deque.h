@@ -273,15 +273,15 @@ protected:
   void create_nodes(map_pointer nstart, map_pointer nfinish);
   void destory_nodes(map_pointer nstart, map_pointer nfinish);
   void fill_initialize(const value_type& value);
-  void reserve_map_at_front(size_type node_to_add = 1)
+  void reserve_map_at_front(size_type nodes_to_add = 1)
   {
-    if (node_to_add > size_type(start.node - map))
+    if (nodes_to_add > size_type(start.node - map))
       reallocate_map(nodes_to_add, true);
   }
 
-  void reserve_map_at_back(size_type node_to_add = 1)
+  void reserve_map_at_back(size_type nodes_to_add = 1)
   {
-    if (node_to_add + 1 > map_size - (finish.node - map)) {
+    if (nodes_to_add + 1 > map_size - (finish.node - map)) {
       reallocate_map(nodes_to_add, false);
     }
   }
@@ -299,7 +299,19 @@ protected:
 template <typename Tp, typename Alloc, size_t BufSize>
 void deque<Tp, Alloc, BufSize>::push_front_aux(const value_type& value)
 {
-
+  value_type value_copy = value;
+  reserve_map_at_front( );
+  *(start.node - 1) = allocate_node( );
+  try {
+    start.set_node(start.node - 1);
+    start.cur = start.last - 1;
+    construct(start.cur, value_copy);
+  } catch (...) {
+    start.set_node(start.node + 1);
+    start.cur = start.first;
+    deallocate_node(*(start.node - 1));
+    throw;
+  }
 }
 
 template <typename Tp, typename Alloc, size_t BufSize>
@@ -385,15 +397,15 @@ void deque<Tp, Alloc, BufSize>::reallocate_map(size_type nodes_to_add, bool add_
     new_nstart = map + (map_size - new_num_nodes) / 2
       + (add_at_front ? nodes_to_add : 0);
     if (new_nstart < start.node)
-      copy(start.node, finish.node + 1, new_nstart);
+      ministl::copy(start.node, finish.node + 1, new_nstart);
     else
-      copy_backward(start.node, finish.node + 1,
+      ministl::copy_backward(start.node, finish.node + 1,
                     new_nstart + old_num_nodes);
   } else {
     size_type new_map_size = map_size + max(map_size, nodes_to_add) + 2;
     map_pointer new_map = allocate_map(new_map_size);
     new_nstart = new_map + (new_map_size - new_num_nodes) / 2 + (add_at_front ? nodes_to_add : 0);
-    copy(start.node, finish.node + 1, new_nstart);
+    ministl::copy(start.node, finish.node + 1, new_nstart);
     deallocate_map(map, map_size);
     map = new_map;
     map_size = new_map_size;
