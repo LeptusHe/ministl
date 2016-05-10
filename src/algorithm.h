@@ -259,6 +259,60 @@ InputIterator find_first_of(InputIterator first1, InputIterator last1,
 }
 
 
+template <typename ForwardIterator1, typename ForwardIterator2>
+inline ForwardIterator1 find_end(ForwardIterator1 first1, ForwardIterator1 last1,
+                                 ForwardIterator2 first2, ForwardIterator2 last2)
+{
+  using category1 = typename iterator_traits<ForwardIterator1>::iterator_category;
+  using category2 = typename iterator_traits<ForwardIterator2>::iterator_category;
+
+  return __find_end(first1, last1, first2, last2, category1( ), category2( ));
+}
+
+template <typename ForwardIterator1, typename ForwardIterator2>
+ForwardIterator1 __find_end(ForwardIterator1 first1, ForwardIterator1 last1,
+                            ForwardIterator2 first2, ForwardIterator2 last2,
+                            forward_iterator_tag, forward_iterator_tag)
+{
+  if (first2 == last2)
+    return last1;
+  else {
+    ForwardIterator1 result = last1;
+    while (true) {
+      ForwardIterator1 new_result = search(first1, last1, first2, last2);
+      if (new_result == last1)
+        return result;
+      else {
+        result = new_result;
+        first1 = new_result;
+        ++first1;
+      }
+    }
+  }
+}
+
+template <typename BidirectionalIterator1, typename BidirectionalIterator2>
+BidirectionalIterator1
+__find_end(BidirectionalIterator1 first1, BidirectionalIterator1 last1,
+           BidirectionalIterator2 first2, BidirectionalIterator2 last2,
+           bidirectional_iterator_tag, bidirectional_iterator_tag)
+{
+  using reviter1 = reverse_iterator<BidirectionalIterator1>;
+  using reviter2 = reverse_iterator<BidirectionalIterator2>;
+
+  reviter1 rlast1(first1);
+  reviter2 rlast2(first2);
+
+  reviter1 rresult = search(reviter1(last1), rlast1, reviter2(last2), rlast2);
+
+  if (rresult == rlast1)
+    return last1;
+  else {
+    BidirectionalIterator1 result = rresult.base( );
+    advance(result, -distance(first2, last2));
+    return result;
+  }
+}
 
 // algorithm equal
 template <typename InputIterator1, typename InputIterator2>
@@ -419,7 +473,7 @@ template <typename T>
 struct copy_dispatch<T*, T*> {
   T* operator() (T* first, T* last, T* result)
   {
-    typedef typename __type_traits<T>::has_trivial_assignment_operator t;
+    typedef typename type_traits<T>::has_trivial_assignment_operator t;
     return copy_t(first, last, result, t( ));
   }
 };
@@ -428,21 +482,21 @@ template <typename T>
 struct copy_dispatch<const T*, T*> {
   T* operator() (const T* first, const T* last, T* result)
   {
-    typedef typename __type_traits<T>::has_trivial_assignment_operator t;
+    typedef typename type_traits<T>::has_trivial_assignment_operator t;
     return copy_t(first, last, result, t( ));
   }
 };
 
 // copy_t functions
 template <typename T>
-inline T* copy_t(const T *first, const T *last, T *result, __true_type)
+inline T* copy_t(const T *first, const T *last, T *result, true_type)
 {
   memmove(result, first, sizeof(T)* (last - first));
   return result + (last - first);
 }
 
 template <typename T>
-inline T* copy_t(const T *first, const T *last, T *result, __false_type)
+inline T* copy_t(const T *first, const T *last, T *result, false_type)
 {
   return copy_d(first, last, result, (ptrdiff_t*)0);
 }
@@ -516,7 +570,7 @@ inline BidirectionalIter2 copy_backward(BidirectionalIter1 first,
                                         BidirectionalIter1 last,
                                         BidirectionalIter2 result)
 {
-  typedef typename __type_traits<typename iterator_traits<BidirectionalIter2>::value_type>
+  typedef typename type_traits<typename iterator_traits<BidirectionalIter2>::value_type>
     ::has_trivial_assignment_operator Trivial;
 
   return __copy_backward_dispatch<BidirectionalIter1, BidirectionalIter2, Trivial>::copy(first, last, result);
@@ -537,7 +591,7 @@ struct __copy_backward_dispatch {
 };
 
 template <typename Tp>
-struct __copy_backward_dispatch<Tp*, Tp*, __true_type> {
+struct __copy_backward_dispatch<Tp*, Tp*, true_type> {
   static Tp* copy(const Tp* first, const Tp* last, Tp* result)
   {
     const ptrdiff_t Num = last - first;
@@ -547,10 +601,10 @@ struct __copy_backward_dispatch<Tp*, Tp*, __true_type> {
 };
 
 template <typename Tp>
-struct __copy_backward_dispatch<const Tp*, Tp*, __true_type> {
+struct __copy_backward_dispatch<const Tp*, Tp*, true_type> {
   static Tp* copy(const Tp* first, const Tp* last, Tp* result)
   {
-    return  __copy_backward_dispatch<Tp*, Tp*, __true_type>::copy(first, last, result);
+    return  __copy_backward_dispatch<Tp*, Tp*, true_type>::copy(first, last, result);
   }
 };
 
@@ -576,6 +630,14 @@ inline BidirectionalIter __copy_backward(RandomAccessIter first,
   for (Distance n = last - first; n > 0; --n)
     *--result = *--last;
   return result;
+}
+
+
+template <typename ForwardIterator, typename Generator>
+void generate(ForwardIterator first, ForwardIterator last, Generator gen)
+{
+  for (; first != last; ++first)
+    *first = gen( );
 }
 
 } // namespace ministl
