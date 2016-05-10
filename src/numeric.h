@@ -30,8 +30,8 @@ OutputIterator adjacent_difference(InputIterator first, InputIterator last,
 
   if (first == last)
     return result;
-  *result = *first;
 
+  *result = *first;
   T value = *first;
   while (++first != last) {
     T tmp = *first;
@@ -49,8 +49,8 @@ OutputIterator adjacent_difference(InputIterator first, InputIterator last,
 
   if (first == last)
     return result;
-  *result = *first;
 
+  *result = *first;
   T value = *first;
   while (++first != last) {
     T tmp = *first;
@@ -89,16 +89,15 @@ OutputIterator partial_sum(InputIterator first, InputIterator last,
   typedef typename iterator_traits<OutputIterator>::value_type T;
 
   if (first == last)  return result;
-  *result = *first;
 
+  *result = *first;
   T value = *first;
-  while (++first != end) {
+  while (++first != last) {
     value = value + *first;
     *++result = value;
   }
   return ++result;
 }
-
 
 template <typename InputIterator, typename OutputIterator, typename BinaryOperation>
 OutputIterator partial_sum(InputIterator first, InputIterator last,
@@ -107,6 +106,7 @@ OutputIterator partial_sum(InputIterator first, InputIterator last,
   typedef typename iterator_traits<OutputIterator>::value_type T;
 
   if (first == last)  return result;
+
   *result = *first;
   T value = *first;
   while (++first != last) {
@@ -115,6 +115,7 @@ OutputIterator partial_sum(InputIterator first, InputIterator last,
   }
   return ++result;
 }
+
 
 template <typename ForwardIterator, typename T>
 void iota(ForwardIterator first, ForwardIterator last, T value)
