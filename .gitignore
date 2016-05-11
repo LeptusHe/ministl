@@ -12,6 +12,7 @@
 *.user
 *.filters
 *.vcxproj
+*.opendb
 
 # Compiled Object files
 *.slo
