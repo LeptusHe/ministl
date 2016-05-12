@@ -2,8 +2,8 @@
 #define MINISTL_CONSTRUCT_H
 
 #include <new.h>
+#include "iterator.h"
 #include "type_traits.h"
-#include "iterator_base.h"
 
 namespace ministl {
 
