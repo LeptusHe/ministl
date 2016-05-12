@@ -2,7 +2,6 @@
 #define MINISTL_ALGORITHM_H
 
 #include <cstring>
-#include <cstdlib>
 #include "pair.h"
 #include "type_traits.h"
 #include "iterator_base.h"
@@ -430,7 +429,7 @@ pair<InputIterator1, InputIterator2> mismatch(InputIterator1 first1,
                                               InputIterator2 first2,
                                               BinaryPredicate binary_pred)
 {
-  while (first1 != last1 && binary_pred(first1, first2)) {
+  while (first1 != last1 && binary_pred(*first1, *first2)) {
     ++first1;
     ++first2;
   }
