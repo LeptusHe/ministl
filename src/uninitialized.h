@@ -17,20 +17,20 @@ inline ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n, const
 template <typename ForwardIterator, typename Size, typename T, typename T1>
 inline ForwardIterator __uninitialized_fill_n(ForwardIterator first, Size n, const T &x, T1 *)
 {
-    typedef typename __type_traits<T1>::is_POD_type is_POD;
+    typedef typename type_traits<T1>::is_POD_type is_POD;
     return __uninitialized_fill_n_aux(first, n, x, is_POD( ));
 }
 
 template <typename ForwardIterator, typename Size, typename T>
 inline ForwardIterator __uninitialized_fill_n_aux(ForwardIterator first, Size n, const T &x,
-                                                    __true_type)
+                                                    true_type)
 {
     return fill_n(first, n, x);
 }
 
 template <typename ForwardIterator, typename Size, typename T>
 inline ForwardIterator __uninitialized_fill_n_aux(ForwardIterator first, Size n, const T &x,
-                                                    __false_type)
+                                                    false_type)
 {
     ForwardIterator cur = first;
     for (; n > 0; --n, ++cur)
@@ -50,20 +50,20 @@ template <typename InputItertor, typename ForwardIterator, typename T>
 inline ForwardIterator __uninitialized_copy(InputItertor first, InputItertor last,
                                             ForwardIterator result, T*)
 {
-    typedef typename __type_traits<T>::is_POD_type is_POD;
+    typedef typename type_traits<T>::is_POD_type is_POD;
     return __uninitialized_copy_aux(first, last, result, is_POD( ));
 }
 
 template <typename InputItertor, typename ForwardIterator>
 inline ForwardIterator __uninitialized_copy_aux(InputItertor first, InputItertor last,
-                                                ForwardIterator result, __true_type)
+                                                ForwardIterator result, true_type)
 {
     return copy(first, last, result);
 }
 
 template <typename InputItertor, typename ForwardIterator>
 inline ForwardIterator __uninitialized_copy_aux(InputItertor first, InputItertor last,
-                                                ForwardIterator result, __false_type)
+                                                ForwardIterator result, false_type)
 {
     ForwardIterator cur = result;
 
@@ -94,20 +94,20 @@ inline void uninitialized_fill(ForwardIterator first, ForwardIterator last,
 template <typename ForwardIterator, typename T, typename T1>
 inline void __uninitialized_fill(ForwardIterator first, ForwardIterator last, const T &x, T1 *)
 {
-    typedef typename __type_traits<T1>::is_POD_type is_POD;
+    typedef typename type_traits<T1>::is_POD_type is_POD;
     return __uninitialized_fill_aux(first, last, x, is_POD( ));
 }
 
 template <typename ForwardIterator, typename T>
 inline void __uninitialized_fill_aux(ForwardIterator first, ForwardIterator last,
-                                        const T &x, __true_type)
+                                        const T &x, true_type)
 {
     fill(first, last, x);
 }
 
 template <typename ForwardIterator, typename T>
 inline void __uninitialized_fill_aux(ForwardIterator first, ForwardIterator last,
-                                        const T &x, __false_type)
+                                        const T &x, false_type)
 {
     ForwardIterator cur = first;
 
