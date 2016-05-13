@@ -1,10 +1,9 @@
 #include "stack.h"
 #include "gtest/gtest.h"
-#include <stack>
 
 namespace ministl {
 
-TEST(StackTest, construct_destroy_size_capacity_capacity_test)
+TEST(StackTest, construct_destroy_size_capacity_test)
 {
   const int size = 100;
   ministl::stack<int> int_stack;
