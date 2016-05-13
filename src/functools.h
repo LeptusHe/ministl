@@ -1,13 +1,13 @@
 #ifndef MINISTL_FUNCTOOLS_H
 #define MINISTL_FUNCTOOLS_H
 
-#include <algorithm>
-
 namespace ministl {
 
+//------------------------------------------------------------------------------
 // algorithms for set
+//------------------------------------------------------------------------------
 // names of algorithm: all_of, any_of, none_of
-
+//------------------------------------------------------------------------------
 template <typename InputIterator, typename Predicate>
 bool all_of(InputIterator first, InputIterator last, Predicate pred)
 {
@@ -44,13 +44,25 @@ bool none_of(InputIterator first, InputIterator last, Predicate pred)
   return flag;
 }
 
-// names of algorithms: map
+//------------------------------------------------------------------------------
+// name of algorithms: map
+//------------------------------------------------------------------------------
 template <typename ForwardIterator, typename Operation>
 inline void map(ForwardIterator first, ForwardIterator last, Operation op)
 {
   for (; first != last; ++first) {
     *first = op(*first);
   }
+}
+
+//------------------------------------------------------------------------------
+// name of algorithm: for_each
+//------------------------------------------------------------------------------
+template <typename InputIterator, typename Operation>
+inline void for_each(InputIterator first, InputIterator last, Operation op)
+{
+  for (; first != last; ++first)
+    op(*first);
 }
 
 } // namespace ministl
