@@ -18,9 +18,10 @@ public:
   typedef Result result_type;
 };
 
-
+//-----------------------------------------------------------------------------------
 // arithmetic functors
 // the arithmetic functors contains plus, minus, multiples, divides, modulus factors.
+//-----------------------------------------------------------------------------------
 
 template <typename Tp>
 class plus : public binary_function<Tp, Tp, Tp> {
@@ -64,23 +65,25 @@ public:
 };
 
 
-template <typename Tp> inline Tp identity_element(plus<Tp>)
+template <typename Tp>
+inline Tp identity_element(plus<Tp>)
 {
   return Tp(0);
 }
 
 
-template <typename Tp> inline Tp identity_element(multiplies<Tp>)
+template <typename Tp>
+inline Tp identity_element(multiplies<Tp>)
 {
   return Tp(1);
 }
 
 
-
+//------------------------------------------------------------------------------
 // relational factors
 // relational factors contains equal_to, not_equal_to, greater, greater_equal,
 // less, less_equal factors.
-
+//------------------------------------------------------------------------------
 template <typename Tp>
 class equal_to : public binary_function<Tp, Tp, bool> {
 public:
@@ -123,9 +126,10 @@ public:
 };
 
 
-
+//------------------------------------------------------------------------------
 // logical functor
 // logical functors contains and, or, not functors.
+//------------------------------------------------------------------------------
 
 template <typename Tp>
 class logical_and : public binary_function<Tp, Tp, bool> {
@@ -148,8 +152,9 @@ public:
 };
 
 
-
+//------------------------------------------------------------------------------
 // identity factor
+//------------------------------------------------------------------------------
 template <typename Tp>
 class identity : public unary_function<Tp, Tp> {
 public:
@@ -157,8 +162,9 @@ public:
 };
 
 
-
-// select functor
+//------------------------------------------------------------------------------
+// select functors
+//------------------------------------------------------------------------------
 template <typename Pair>
 class select1st : public unary_function<Pair, typename Pair::first_type> {
 public:
@@ -167,7 +173,7 @@ public:
 
 
 template <typename Pair>
-class select2th : public unary_function<Pair, typename Pair::first_type> {
+class select2th : public unary_function<Pair, typename Pair::second_type> {
 public:
   const typename Pair::second_type& operator()(const Pair& x) const { return x.second; }
 };
@@ -189,9 +195,9 @@ public:
 };
 
 
-
+//------------------------------------------------------------------------------
 // functor adapters: not1, not2
-
+//------------------------------------------------------------------------------
 // not1 functor adapter
 template <class Predicate>
 class unary_negate : public unary_function<typename Predicate::argument_type, bool> {
@@ -213,15 +219,18 @@ inline unary_negate<Predicate> not1(const Predicate& pred)
 // not2 functor adapter
 template <class Predicate>
 class binary_negate : public binary_function<typename Predicate::first_argument_type,
-                                            typename Predicate::second_argument_type,
-                                            bool> {
+  typename Predicate::second_argument_type,
+  bool> {
 protected:
   Predicate pred_;
 public:
   explicit binary_negate(const Predicate& pred) : pred_(pred) { }
 
   bool operator()(const typename Predicate::first_argument_type& x,
-                  const typename Predicate::second_argument_type& y) const { return !pred_(x, y); }
+                  const typename Predicate::second_argument_type& y) const
+  {
+    return !pred_(x, y);
+  }
 };
 
 template <typename Predicate>
@@ -230,17 +239,19 @@ inline unary_negate<Predicate> not2(const Predicate& pred)
   return binary_negate<Predicate>(pred);
 }
 
-
+//------------------------------------------------------------------------------
 // bind1st functor adapter
+//------------------------------------------------------------------------------
 template <typename Operation>
 class binder1st : public unary_function<typename Operation::second_argument_type,
-                                         typename Operation::result_type> {
+  typename Operation::result_type> {
 protected:
   Operation op_;
   typename Operation::first_argument_type value_;
 public:
   explicit binder1st(const Operation& x, const typename Operation::first_argument_type& y)
-    : op_(x), value_(y) { }
+    : op_(x), value_(y)
+  { }
 
   typename Operation::result_type operator()(const typename Operation::second_argument_type& y) const
   {
@@ -259,13 +270,14 @@ inline binder1st<Operation> bind1st(const Operation& fn, const Tp& x)
 // bind2st
 template <typename Operation>
 class binder2st : public unary_function<typename Operation::first_argument_type,
-                                        typename Operation::result_type> {
+  typename Operation::result_type> {
 protected:
   Operation op_;
   typename Operation::second_argument_type value_;
 public:
   explicit binder2st(const Operation& op, typename Operation::second_argument_type& x)
-    :op_(op), value_(x) { }
+    :op_(op), value_(x)
+  { }
 
   typename Operation::result_type operator()(const Operation& op,
                                              const typename Operation::first_argument_type& x) const
@@ -281,17 +293,19 @@ inline binder2st<Operation> bind2st(const Operation& fn, const Tp& x)
   return bind2st<Operation>(fn, Arg2_type(x));
 }
 
-
+//------------------------------------------------------------------------------
 // compose1 functor adapter
+//------------------------------------------------------------------------------
 template <typename Operation1, typename Operation2>
 class unary_compose : public unary_function<typename Operation2::argument_type,
-                                            typename Operation1::result_type> {
+  typename Operation1::result_type> {
 protected:
   Operation1 fn1_;
   Operation2 fn2_;
 public:
   explicit unary_compose(const Operation1& fn1, const Operation2& fn2)
-    : fn1_(fn1), fn2_(fn2) { }
+    : fn1_(fn1), fn2_(fn2)
+  { }
 
   typename Operation1::result_type operator()(typename Operation2::argument_type x) const
   {
@@ -310,16 +324,17 @@ inline unary_compose<Operation1, Operation2> compose1(const Operation1& fn1, con
 // compose2 functor adapter
 template <typename Operation1, typename Operation2, typename Operation3>
 class binary_compose : public unary_function<typename Operation2::argument_type,
-                                             typename Operation1::result_type> {
+  typename Operation1::result_type> {
 protected:
   Operation1 fn1_;
   Operation2 fn2_;
   Operation3 fn3_;
 public:
   explicit binary_compose(const Operation1& x, const Operation2& y, const Operation3& z)
-    : fn1_(x), fn2_(y), fn3_(z) { }
+    : fn1_(x), fn2_(y), fn3_(z)
+  { }
 
-  typename Operation1::result_type operator()(const typename Operation2::argument_type& x) const 
+  typename Operation1::result_type operator()(const typename Operation2::argument_type& x) const
   {
     return fn1_(fn2_(x), fn3_(x));
   }
