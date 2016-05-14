@@ -16,7 +16,7 @@ public:
 
 FindAlgorithmTest::RandomEngine FindAlgorithmTest::random_engine;
 
-TEST_F(FindAlgorithmTest, findTest)
+TEST_F(FindAlgorithmTest, find_test)
 {
   const int TEST_TIMES = 1000;
   const int VECTOR_NUMS = 1000;
