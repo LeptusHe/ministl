@@ -18,7 +18,7 @@ public:
   }
 };
 
-TEST(ArithmeticFunctorsTest, PlusTest)
+TEST(ArithmeticFunctorsTest, plus_test)
 {
   static const unsigned long long TEST_CASES_NUMBER = 1000;
   std::vector<int> lhs_numbers(TEST_CASES_NUMBER);
