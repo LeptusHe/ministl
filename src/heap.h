@@ -21,7 +21,7 @@ void do_push_heap(RandomAccessIterator first, Distance hole_index, Distance top_
 {
   Distance parent = (hole_index - 1) / 2;
   while (hole_index > top_index && *(first + parent) < value) {
-    *(first + hole_index) = (*first + parent);
+    *(first + hole_index) = *(first + parent);
     hole_index = parent;
     parent = (hole_index - 1) / 2;
   }
@@ -35,13 +35,13 @@ inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last)
   pop_heap_aux(first, last, value_type(first));
 }
 
-template <typename RandomAccessIterator, typename Distance, typename T>
+template <typename RandomAccessIterator, typename T>
 inline void pop_heap_aux(RandomAccessIterator first, RandomAccessIterator last, T*)
 {
   do_pop_heap(first, last - 1, last - 1, T(*(last - 1)), distance_type(first));
 }
 
-template <typename RandomAccessIterator, typename T>
+template <typename RandomAccessIterator, typename T, typename Distance>
 inline void do_pop_heap(RandomAccessIterator first, RandomAccessIterator last, RandomAccessIterator result,
                         T value, Distance*)
 {
@@ -74,7 +74,7 @@ template <typename RandomAccessIterator>
 void sort_heap(RandomAccessIterator first, RandomAccessIterator last)
 {
   while (last - first > 1) {
-    pop_heap(first, last--);
+    ministl::pop_heap(first, last--);
   }
 }
 
