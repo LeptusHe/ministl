@@ -38,8 +38,8 @@ template <typename T, typename Sequence = vector<int>,
 class priority_queue {
 public:
   using value_type = typename Sequence::value_type;
-  using reference_type = typename Sequence::referenec_type;
-  using const_reference_type = typename Sequence::const_reference_type;
+  using reference = typename Sequence::reference;
+  using const_reference = typename Sequence::const_reference;
   using size_type = typename Sequence::size_type;
 
 public:
