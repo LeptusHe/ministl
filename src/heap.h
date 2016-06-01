@@ -45,7 +45,7 @@ template <typename RandomAccessIterator, typename T, typename Distance>
 inline void do_pop_heap(RandomAccessIterator first, RandomAccessIterator last, RandomAccessIterator result,
                         T value, Distance*)
 {
-  *result = *last;
+  *result = *first;
   adjust_heap(first, Distance(0), Distance(last - first), value);
 }
 
