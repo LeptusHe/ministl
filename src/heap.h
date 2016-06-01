@@ -55,7 +55,7 @@ void adjust_heap(RandomAccessIterator first, Distance hole_index, Distance len, 
   Distance top_index = hole_index;
   Distance second_child = 2 * hole_index + 2;
   
-  if (second_child < len) {
+  while (second_child < len) {
     if (*(first + second_child) < *(first + (second_child - 1)))
       second_child--;
     *(first + hole_index) = *(first + second_child);
