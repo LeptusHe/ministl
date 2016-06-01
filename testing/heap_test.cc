@@ -1,6 +1,7 @@
 #include "heap.h"
 
 #include <algorithm>
+#include <functional>
 #include <random>
 #include <vector>
 
@@ -32,9 +33,9 @@ TEST(HeapTest, push_heap_test)
 TEST(HeapTest, make_heap_test)
 {
   std::default_random_engine e;
-  std::uniform_int_distribution<int> randomer(-100, 100);
+  std::uniform_int_distribution<int> randomer(-200, 200);
 
-  const int vec_size = 11;
+  const int vec_size = 20;
   std::vector<int> vec(vec_size);
   std::generate(vec.begin( ), vec.end( ), [&]( ) { return randomer(e); });
   std::vector<int> vec_copy = vec;
@@ -42,6 +43,25 @@ TEST(HeapTest, make_heap_test)
   ministl::make_heap(vec.begin( ), vec.end( ));
   std::make_heap(vec_copy.begin( ), vec_copy.end( ));
 
+  for (int i = 0; i < vec_size; ++i)
+    EXPECT_EQ(vec[i], vec_copy[i]) << i << std::endl;
+}
+
+
+TEST(HeapTest, pop_heap_and_heap_sort_test)
+{
+  std::default_random_engine e;
+  std::uniform_int_distribution<int> randomer(-200, 200);
+
+  const int vec_size = 20;
+  std::vector<int> vec(vec_size);
+  std::generate(vec.begin( ), vec.end( ), [&]( ) { return randomer(e); });
+  std::vector<int> vec_copy = vec;
+
+  ministl::make_heap(vec.begin( ), vec.end( ));
+  ministl::sort_heap(vec.begin( ), vec.end( ));
+  std::sort(vec_copy.begin( ), vec_copy.end( ));
+  
   for (int i = 0; i < vec_size; ++i)
     EXPECT_EQ(vec[i], vec_copy[i]) << i << std::endl;
 }
