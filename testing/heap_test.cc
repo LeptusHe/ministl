@@ -27,3 +27,21 @@ TEST(HeapTest, push_heap_test)
   for (int i = 0; i < vec_size; ++i)
     EXPECT_EQ(vec[i], vec_copy[i]);
 }
+
+
+TEST(HeapTest, make_heap_test)
+{
+  std::default_random_engine e;
+  std::uniform_int_distribution<int> randomer(-100, 100);
+
+  const int vec_size = 11;
+  std::vector<int> vec(vec_size);
+  std::generate(vec.begin( ), vec.end( ), [&]( ) { return randomer(e); });
+  std::vector<int> vec_copy = vec;
+  
+  ministl::make_heap(vec.begin( ), vec.end( ));
+  std::make_heap(vec_copy.begin( ), vec_copy.end( ));
+
+  for (int i = 0; i < vec_size; ++i)
+    EXPECT_EQ(vec[i], vec_copy[i]) << i << std::endl;
+}
