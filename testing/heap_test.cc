@@ -12,7 +12,7 @@ TEST(HeapTest, push_heap_test)
   std::default_random_engine e;
   std::uniform_int_distribution<int> randomer(-100, 100);
 
-  const int vec_size = 20;
+  const int vec_size = 200;
   std::vector<int> vec(vec_size);
   std::generate(vec.begin( ), vec.end( ), [&]( ) { return randomer(e); });
   
@@ -35,7 +35,7 @@ TEST(HeapTest, make_heap_test)
   std::default_random_engine e;
   std::uniform_int_distribution<int> randomer(-200, 200);
 
-  const int vec_size = 20;
+  const int vec_size = 200;
   std::vector<int> vec(vec_size);
   std::generate(vec.begin( ), vec.end( ), [&]( ) { return randomer(e); });
   std::vector<int> vec_copy = vec;
@@ -53,7 +53,7 @@ TEST(HeapTest, pop_heap_and_heap_sort_test)
   std::default_random_engine e;
   std::uniform_int_distribution<int> randomer(-200, 200);
 
-  const int vec_size = 20;
+  const int vec_size = 200;
   std::vector<int> vec(vec_size);
   std::generate(vec.begin( ), vec.end( ), [&]( ) { return randomer(e); });
   std::vector<int> vec_copy = vec;
