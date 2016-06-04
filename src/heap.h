@@ -99,7 +99,7 @@ void adjust_heap(RandomAccessIterator first, Distance hole_index, Distance len, 
 
 
 template <typename RandomAccessIterator, typename Compare>
-inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare compare)
+inline void pop_heap(RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
   pop_heap_aux(first, last, value_type(first), comp);
 }
