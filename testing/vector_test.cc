@@ -7,9 +7,17 @@ namespace ministl {
 
 TEST(VectorTest, construct_destory_test)
 {
-  ministl::vector<int> vec_size(10);
-  EXPECT_EQ(10, vec_size.size( ));
-  EXPECT_FALSE(vec_size.empty( ));
+  int vec_size = 10;
+  ministl::vector<int> vec_int(vec_size);
+  ministl::generate(vec_int.begin( ), vec_int.end( ), [vec_size]( ) mutable { return vec_size--; });
+  EXPECT_EQ(vec_size, vec_int.size( ));
+  EXPECT_FALSE(vec_int.empty( ));
+
+  ministl::vector<int> vec_copy(vec_int.begin( ), vec_int.end( ));
+  EXPECT_EQ(vec_int.size( ), vec_copy.size( ));
+  for (int i = 0; i < vec_copy.size( ); ++i) {
+    EXPECT_EQ(vec_int[i], vec_copy[i]);
+  }
 
   ministl::vector<std::string> vec_string;
   EXPECT_EQ(nullptr, vec_string.begin( ));
@@ -18,19 +26,20 @@ TEST(VectorTest, construct_destory_test)
   EXPECT_EQ(0, vec_string.capacity());
   EXPECT_TRUE(vec_string.empty( ));
 
-  ministl::vector<std::string> vec_strs(10, "test");
+  ministl::vector<std::string> vec_strs(vec_size, "test");
   EXPECT_TRUE(std::all_of(vec_strs.begin( ), vec_strs.end( ), [](const std::string& str) { return str == "test"; }));
 }
 
 TEST(VectorTest, begin_end_front_back_test)
 {
-  ministl::vector<int> vec(10);
+  const int vec_size = 10;
+  ministl::vector<int> vec(vec_size);
   for (int i = 0; i < vec.size( ); ++i)
     vec[i] = i;
   EXPECT_EQ(0, vec.front( ));
-  EXPECT_EQ(9, vec.back( ));
+  EXPECT_EQ(vec_size - 1, vec.back( ));
   EXPECT_EQ(0, *vec.begin());
-  EXPECT_EQ(9, *(vec.end( ) - 1));
+  EXPECT_EQ(vec_size - 1, *(vec.end( ) - 1));
 }
 
 TEST(VectorTest, push_back_pop_back_test)
