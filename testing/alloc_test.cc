@@ -4,7 +4,7 @@
 namespace ministl {
 
 // test cases for template malloc_alloc_template
-TEST(MallocAllocTemplateTEST, allocate_deallocate_reallocate_test)
+TEST(MallocAllocTemplateTest, allocate_deallocate_reallocate_test)
 {
   malloc_alloc allocator;
   const int constant_value = 10;

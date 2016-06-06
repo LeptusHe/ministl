@@ -20,7 +20,7 @@ TEST(QueueTest, construct_destroy_size_capacity_test)
 
 TEST(QueueTest, push_pop_top_test)
 {
-  const int size = 10;
+  const int size = 20;
   ministl::queue<int> int_queue;
   for (int i = 0; i < size; ++i)
     int_queue.push(i * i);

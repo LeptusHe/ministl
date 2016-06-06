@@ -7,7 +7,7 @@
 
 namespace ministl {
 
-TEST(PairTest, pairTest)
+TEST(PairTest, pair_test)
 {
   const int TEST_CASES = 1000;
   std::default_random_engine rand_engine;
@@ -19,7 +19,8 @@ TEST(PairTest, pairTest)
 
   std::generate(int_vector.begin( ), int_vector.end( ), rand_engine);
   std::generate(double_vector.begin( ), double_vector.end( ), [&]( ) { return double_dist(rand_engine); });
-  std::transform(int_vector.begin( ), int_vector.end( ), double_vector.begin( ), pairs.begin(), std::function<ministl::pair<int, double>(const int&, const double&)>(ministl::make_pair<int, double>));
+  std::transform(int_vector.begin( ), int_vector.end( ), double_vector.begin( ), pairs.begin(),
+                 std::function<ministl::pair<int, double>(const int&, const double&)>(ministl::make_pair<int, double>));
 
   for (auto i = 0; i < TEST_CASES; ++i) {
     EXPECT_EQ(pairs[i].first, int_vector[i]);
